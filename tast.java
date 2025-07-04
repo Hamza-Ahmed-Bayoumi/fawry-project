@@ -1,7 +1,6 @@
 import java.util.*;
 import java.time.LocalDate;
 
-// Interface for shippable items
 interface Shippable {
     String getName();
     double getWeight();
@@ -23,13 +22,13 @@ class Product implements Shippable {
         this.expires = expires;
         this.weight = weight;
         this.requiresShipping = requiresShipping;
-        // Set expiration date for expirable products (example: 7 days from now)
+       
         if (expires) {
             this.expirationDate = LocalDate.now().plusDays(7);
         }
     }
 
-    // Constructor for expired products (for testing)
+  
     Product(String name, double price, int quantity, boolean expires, double weight, boolean requiresShipping, LocalDate expirationDate) {
         this.name = name;
         this.price = price;
@@ -113,13 +112,12 @@ class ShippingService {
 
 class Checkout {
     static void checkout(Customer customer, Cart cart) {
-        // Check if cart is empty
+       
         if (cart.isEmpty()) {
             System.out.println("Error: Cart is empty!");
             return;
         }
 
-        // Check for expired products
         for (Product product : cart.items.keySet()) {
             if (product.isExpired()) {
                 System.out.println("Error: Product " + product.name + " has expired!");
@@ -131,14 +129,12 @@ class Checkout {
         double shipping = calculateShipping(cart);
         double amount = subtotal + shipping;
 
-        // Check if customer has sufficient balance
         if (customer.balance < amount) {
             System.out.println("Error: Customer's balance is insufficient. Required: " + 
                              amount + ", Available: " + customer.balance);
             return;
         }
 
-        // Process shipping first
         List<Shippable> toShip = new ArrayList<>();
         Map<Product, Integer> shippableQuantities = new HashMap<>();
         
@@ -152,14 +148,11 @@ class Checkout {
         
         new ShippingService().ship(toShip, shippableQuantities);
 
-        // Print receipt
         printReceipt(cart, subtotal, shipping, amount, customer.balance);
-        
-        // Update customer balance
+
         customer.balance -= amount;
         System.out.println("Customer current balance after payment: " + customer.balance);
         
-        // Clear cart
         cart.items.clear();
         System.out.println("Checkout completed successfully!");
     }
@@ -197,7 +190,6 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== E-COMMERCE SYSTEM TEST ===\n");
         
-        // Test Case 1: Normal checkout
         System.out.println("TEST 1: Normal Checkout");
         Customer customer = new Customer(400.0);
         Cart cart = new Cart();
@@ -214,30 +206,25 @@ public class Main {
 
         Checkout.checkout(customer, cart);
         
-        // Test Case 2: Empty cart
         System.out.println("\nTEST 2: Empty Cart");
         Cart emptyCart = new Cart();
         Checkout.checkout(customer, emptyCart);
         
-        // Test Case 3: Insufficient balance
         System.out.println("\nTEST 3: Insufficient Balance");
         Customer poorCustomer = new Customer(50.0);
         Cart expensiveCart = new Cart();
         expensiveCart.add(tv, 1);
         Checkout.checkout(poorCustomer, expensiveCart);
-        
-        // Test Case 4: Insufficient stock
+
         System.out.println("\nTEST 4: Insufficient Stock");
         Cart cart2 = new Cart();
-        cart2.add(tv, 5); // Only 2 left in stock
+        cart2.add(tv, 5); 
         
-        // Test Case 5: Expired product
         System.out.println("\nTEST 5: Expired Product");
         Product expiredCheese = new Product("Expired Cheese", 100.0, 5, true, 400.0, true, LocalDate.now().minusDays(1));
         Cart cart3 = new Cart();
         cart3.add(expiredCheese, 1);
         
-        // Test Case 6: Digital product only (no shipping)
         System.out.println("\nTEST 6: Digital Product Only");
         Customer digitalCustomer = new Customer(100.0);
         Cart digitalCart = new Cart();
